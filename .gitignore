@@ -1,0 +1,14 @@
+# Dependencias de Node.js y React
+node_modules/
+
+# Variables de entorno: pueden contener contraseñas
+.env
+.env.*
+!.env.example
+
+# Archivos generados al preparar la aplicación
+dist/
+build/
+
+# Registros de errores
+*.log
