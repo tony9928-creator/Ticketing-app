@@ -1,6 +1,6 @@
 # Bootcamp Ticketing
 
-Proyecto final grupal del bootcamp: plataforma para **vender y reservar entradas de eventos** (estilo Ticketmaster), con reservas temporales y control estricto de stock.
+Proyecto final grupal del bootcamp: plataforma para **vender y reservar entradas de eventos** , con reservas temporales y control estricto de stock.
 
 | Parte | Tecnología | Estado |
 |---|---|---|
