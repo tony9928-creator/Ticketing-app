@@ -1,5 +1,7 @@
 # Guía de MongoDB Atlas (paso a paso)
 
+> **Es una alternativa.** Para desarrollar en el día a día, lo más simple es que cada integrante use MongoDB en su PC: ver [`MONGO-LOCAL.md`](MONGO-LOCAL.md). Atlas sirve cuando el equipo quiere una base compartida o cuando se publique la API en internet.
+
 Atlas es MongoDB **en la nube**: no hay que instalar ni levantar ningún servidor de base de datos. El clúster ya corre solo; nosotros únicamente nos conectamos con una dirección (la *URI*). Lo único que cada persona ejecuta en su computadora es la API (`npm run dev`).
 
 ## Cómo nos organizamos

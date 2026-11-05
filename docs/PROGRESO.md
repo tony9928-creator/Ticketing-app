@@ -26,6 +26,37 @@ Extras: seed con datos de ejemplo, `requests.http` con todo el flujo, manejo de 
 - Pagar es también atómico: dos pagos simultáneos de la misma reserva emiten **un solo ticket**.
 - Un job revisa cada 30 s las reservas vencidas y repone su stock; además se libera el stock vencido antes de cada reserva nueva.
 
+## Decisiones para discutir en equipo
+
+Estas decisiones las tomó una sola persona para avanzar rápido. **Conviene que el equipo las revise y las confirme o cambie**, idealmente antes de repartir tareas grandes (cuanto más código se escribe, más cuesta cambiar).
+
+### 1. ¿Backend en TypeScript o en JavaScript?
+
+**Qué pasó:** el servidor inicial del repo estaba en JavaScript. El PR #1 lo reemplazó por un backend en **TypeScript** y ya está en `main`. Se hizo como propuesta; **no es definitivo**.
+
+| | TypeScript (estado actual) | JavaScript |
+|---|---|---|
+| A favor | Detecta errores antes de ejecutar (`npm run typecheck`), autocompletado muy útil, el código actual ya está escrito y probado así. | Más simple de aprender y leer; sin compilación ni archivos de tipos. |
+| En contra | Curva de aprendizaje si no se conoce; un paso extra (`tsx`/`tsc`) y más sintaxis. | Habría que **convertir unos 50 archivos** (estimado: medio día de trabajo de una persona) y se pierden los chequeos de tipos. |
+
+**Cómo decidir:** una charla corta en la que cada integrante diga si puede leer y escribir TypeScript con comodidad. Si la mayoría no, conviene evaluar volver a JavaScript **ahora**, antes de que se sumen más ramas. Si se elige JavaScript, una persona hace la conversión en su propia rama y el resto espera ese merge para empezar sus tareas.
+
+### 2. ¿Dónde corre la base de datos en desarrollo?
+
+**Propuesta:** MongoDB **en la PC de cada integrante** (ver [`MONGO-LOCAL.md`](MONGO-LOCAL.md)): sin cuentas, sin compartir contraseñas y sin pisarse los datos con `npm run seed`. **Atlas** ([`ATLAS.md`](ATLAS.md)) queda para una base compartida o para cuando se publique la API.
+
+### 3. Pago simulado o real
+Hoy `POST /api/bookings/:id/pay` simula un pago aprobado. Decidir si en la entrega final se integra una pasarela real (por ejemplo Mercado Pago) o se deja simulado.
+
+### Registro de decisiones
+Cuando el equipo decida, anótenlo aquí para que quede a la vista:
+
+| # | Decisión | Resultado | Fecha |
+|---|---|---|---|
+| 1 | Lenguaje del backend | _pendiente_ | |
+| 2 | Base de datos en desarrollo | _pendiente_ | |
+| 3 | Pago simulado o real | _pendiente_ | |
+
 ## Qué falta (backend) — ideas para repartir
 
 | # | Tarea | Detalle |
@@ -45,13 +76,13 @@ Sugerencia de reparto: una persona por tarea, cada una en su rama (ver el flujo 
 
 ## Cómo probar lo que ya existe
 
-1. Sigue "Empezar en 5 pasos" del [README](../README.md) (incluye la guía de [Atlas](ATLAS.md)).
+1. Sigue "Empezar en 5 pasos" del [README](../README.md) (con MongoDB [local](MONGO-LOCAL.md) o en [Atlas](ATLAS.md)).
 2. Abre `backend/requests.http` y ejecuta en orden: logins → eventos → reserva → pago → ticket → validar QR.
 3. Usuarios del seed (contraseña de todos: `Tickets2026`): `admin@tickets.io`, `organizer@tickets.io`, `lucia@tickets.io`, `tomas@tickets.io`.
 
 ## Decisiones técnicas que conviene que el equipo conozca
 
-- **TypeScript** en el backend (el servidor de prueba inicial estaba en JavaScript). Da errores claros antes de ejecutar; si alguien prefiere JS, es una conversación para tener en equipo.
+- **Lenguaje:** el backend está en TypeScript; es una decisión abierta (ver [Decisiones para discutir en equipo](#decisiones-para-discutir-en-equipo)).
 - Los datos de ejemplo se crean con fechas relativas a "hoy", así que los eventos siempre quedan a futuro.
 - El pago es simulado: `POST /api/bookings/:id/pay` representa un pago aprobado.
 - Límites conocidos: sin transacciones multi-documento (si el servidor se cae justo entre dos pasos, puede requerir una corrección manual).

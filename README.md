@@ -7,7 +7,7 @@ Proyecto final grupal del bootcamp: plataforma para **vender y reservar entradas
 | Backend (`/backend`) | Node.js, TypeScript, Express 5, MongoDB Atlas (Mongoose), JWT, bcrypt, Zod | Base funcionando |
 | Frontend (`/frontend`) | React | Pendiente |
 
-> **Resumen de avances y tareas pendientes:** [`docs/PROGRESO.md`](docs/PROGRESO.md)
+> **Resumen de avances, decisiones a discutir y tareas pendientes:** [`docs/PROGRESO.md`](docs/PROGRESO.md)
 
 ## Empezar en 5 pasos
 
@@ -17,8 +17,10 @@ Proyecto final grupal del bootcamp: plataforma para **vender y reservar entradas
    cd bootcamp-ticketing/backend
    npm install
    ```
-2. **Conéctate a MongoDB Atlas**: sigue la guía [`docs/ATLAS.md`](docs/ATLAS.md) (crear usuario, permitir tu IP, copiar la URI). Es lo único que toma unos minutos.
-3. **Crea tu `.env`**: `cp .env.example .env` (en PowerShell: `Copy-Item .env.example .env`) y completa `MONGO_URI` y `JWT_SECRET`.
+2. **Ten una base de datos MongoDB.** Elige una opción:
+   - **A (recomendada para desarrollar): MongoDB en tu PC.** Sigue [`docs/MONGO-LOCAL.md`](docs/MONGO-LOCAL.md). Cada persona tiene su propia base, sin cuentas ni contraseñas compartidas.
+   - **B: MongoDB Atlas (en la nube).** Sigue [`docs/ATLAS.md`](docs/ATLAS.md). Sirve para una base compartida o para publicar la API.
+3. **Crea tu `.env`**: `cp .env.example .env` (en PowerShell: `Copy-Item .env.example .env`) y completa `MONGO_URI` y `JWT_SECRET`. Con MongoDB local: `MONGO_URI=mongodb://127.0.0.1:27017/tickets`.
 4. **Carga datos de ejemplo**: `npm run seed` (¡borra y recrea la base de **tu** `.env`!).
 5. **Arranca la API**: `npm run dev` → `http://localhost:3000/api/health`.
 
@@ -28,7 +30,7 @@ Para probar los endpoints usa `backend/requests.http` (extensión *REST Client* 
 
 ### Reglas básicas
 - **No se trabaja directo en `main`.** Cada tarea va en su propia rama y entra por Pull Request.
-- **Cada persona usa su propia base de datos** en Atlas (`tickets_tunombre`). El comando `seed` borra todo lo que haya en la base configurada: si dos personas comparten base, se pisan los datos.
+- **Cada persona usa su propia base de datos** (la de su PC, o `tickets_tunombre` si usan Atlas). El comando `seed` borra todo lo que haya en la base configurada: si dos personas comparten base, se pisan los datos.
 - **Nunca se sube el `.env`** (ya está en `.gitignore`). Las credenciales se comparten por un canal privado del equipo, jamás por el repositorio.
 - Código en inglés donde ya lo está (nombres de archivos y clases) y mensajes de la API en español. Los campos de datos siguen el diseño del equipo (`titulo`, `fecha`, `id_usuario`…).
 
@@ -53,8 +55,9 @@ El backend está dividido en módulos (`backend/src/modules/{auth,user,event,boo
 bootcamp-ticketing/
 ├── README.md
 ├── docs/
-│   ├── ATLAS.md        # guía paso a paso de MongoDB Atlas
-│   └── PROGRESO.md     # qué está hecho y qué falta
+│   ├── MONGO-LOCAL.md  # instalar MongoDB en Windows (opción recomendada)
+│   ├── ATLAS.md        # alternativa: MongoDB Atlas en la nube
+│   └── PROGRESO.md     # qué está hecho, decisiones a discutir y qué falta
 └── backend/
     ├── README.md       # documentación de la API y de las reglas de negocio
     ├── requests.http   # pruebas manuales de todos los endpoints

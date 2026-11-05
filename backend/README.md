@@ -5,7 +5,7 @@ Node.js + TypeScript + Express 5 + MongoDB (Mongoose).
 
 ## Instalación
 
-Requisitos: Node.js 20+ y una base MongoDB (Atlas o local).
+Requisitos: Node.js 20+ y una base MongoDB (local en tu PC o Atlas; ver `docs/MONGO-LOCAL.md` en la raíz del repo).
 
 ```bash
 cd backend
@@ -17,7 +17,7 @@ npm run dev               # http://localhost:3000/api
 
 | Variable | Obligatoria | Descripción |
 |---|---|---|
-| `MONGO_URI` | Sí | Cadena de conexión **terminada en el nombre de la base** (`.../tickets?...`) |
+| `MONGO_URI` | Sí | Cadena de conexión **terminada en el nombre de la base**. Local: `mongodb://127.0.0.1:27017/tickets`. Atlas: `mongodb+srv://USUARIO:CLAVE@CLUSTER.mongodb.net/tickets?...` |
 | `JWT_SECRET` | Sí | Secreto para firmar los tokens |
 | `PORT` | No | Puerto (por defecto `3000`) |
 | `JWT_EXPIRES_IN` | No | Duración del token (por defecto `1d`) |
