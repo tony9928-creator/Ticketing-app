@@ -1,0 +1,222 @@
+# Ticket API - pruebas con la extensión REST Client (humao.rest-client)
+# ANTES: npm run seed  y  npm run dev   (puerto 3000 por defecto)
+#
+# USUARIOS DEL SEED (contraseña: Tickets2026)
+#   admin@tickets.io      admin
+#   organizer@tickets.io  organizer
+#   lucia@tickets.io      user
+#   tomas@tickets.io      user
+#
+# Ejecuta en orden: logins -> eventos -> reserva -> pago -> ticket.
+# Para ver el vencimiento, reserva y espera BOOKING_HOLD_MINUTES (5 por defecto) antes de pagar.
+
+@base = http://localhost:3000/api
+@json = application/json
+@password = Tickets2026
+
+### Salud
+GET {{base}}/health
+
+### ---------------- LOGIN ----------------
+
+# @name loginAdmin
+POST {{base}}/auth/login
+Content-Type: {{json}}
+
+{ "email": "admin@tickets.io", "password": "{{password}}" }
+
+###
+@adminToken = {{loginAdmin.response.body.token}}
+
+# @name loginOrganizer
+POST {{base}}/auth/login
+Content-Type: {{json}}
+
+{ "email": "organizer@tickets.io", "password": "{{password}}" }
+
+###
+@organizerToken = {{loginOrganizer.response.body.token}}
+
+# @name loginLucia
+POST {{base}}/auth/login
+Content-Type: {{json}}
+
+{ "email": "lucia@tickets.io", "password": "{{password}}" }
+
+###
+@luciaToken = {{loginLucia.response.body.token}}
+
+# @name loginTomas
+POST {{base}}/auth/login
+Content-Type: {{json}}
+
+{ "email": "tomas@tickets.io", "password": "{{password}}" }
+
+###
+@tomasToken = {{loginTomas.response.body.token}}
+
+### Registro (siempre crea rol "user") -> 201
+POST {{base}}/auth/register
+Content-Type: {{json}}
+
+{ "nombre": "Nuevo Usuario", "email": "nuevo@tickets.io", "password": "{{password}}" }
+
+### ---------------- EVENTOS ----------------
+
+### Cartelera pública -> 200
+# @name listEvents
+GET {{base}}/events
+
+###
+@eventId = {{listEvents.response.body.$[0].id}}
+
+### Filtros: ciudad / título / esLocal -> 200
+GET {{base}}/events?ciudad=corrientes&esLocal=true
+
+### Detalle -> 200
+GET {{base}}/events/{{eventId}}
+
+### Organizer crea un evento -> 201
+# @name createEvent
+POST {{base}}/events
+Authorization: Bearer {{organizerToken}}
+Content-Type: {{json}}
+
+{
+  "titulo": "Recital de Cumbia",
+  "descripcion": "Gran noche de cumbia",
+  "fecha": "{{$datetime iso8601 20 d}}",
+  "ubicacion": {
+    "nombreLugar": "Teatro Vera",
+    "ciudad": "Corrientes",
+    "coordenadas": [-58.8306, -27.4698]
+  },
+  "esLocal": true,
+  "precio": 15000,
+  "stockDisponible": 50
+}
+
+###
+@newEventId = {{createEvent.response.body.id}}
+
+### Un "user" intenta crear un evento -> 403
+POST {{base}}/events
+Authorization: Bearer {{luciaToken}}
+Content-Type: {{json}}
+
+{}
+
+### Fecha pasada -> 400
+POST {{base}}/events
+Authorization: Bearer {{organizerToken}}
+Content-Type: {{json}}
+
+{
+  "titulo": "Evento viejo",
+  "fecha": "2020-01-01T10:00:00.000Z",
+  "ubicacion": { "nombreLugar": "Sala", "ciudad": "Corrientes", "coordenadas": [-58.8, -27.4] },
+  "precio": 100,
+  "stockDisponible": 10
+}
+
+### ---------------- RESERVAS ----------------
+
+### Lucía reserva 2 entradas -> 201 PENDING, descuenta stock y vence en 5 min
+# @name createBooking
+POST {{base}}/bookings
+Authorization: Bearer {{luciaToken}}
+Content-Type: {{json}}
+
+{ "id_evento": "{{newEventId}}", "cantidad": 2 }
+
+###
+@bookingId = {{createBooking.response.body.id}}
+
+### Stock del evento tras reservar (bajó en 2) -> 200
+GET {{base}}/events/{{newEventId}}
+
+### Más entradas que el stock -> 409
+POST {{base}}/bookings
+Authorization: Bearer {{tomasToken}}
+Content-Type: {{json}}
+
+{ "id_evento": "{{newEventId}}", "cantidad": 10 }
+
+### Cantidad inválida -> 400
+POST {{base}}/bookings
+Authorization: Bearer {{tomasToken}}
+Content-Type: {{json}}
+
+{ "id_evento": "{{newEventId}}", "cantidad": 0 }
+
+### Mis reservas -> 200
+GET {{base}}/bookings/me
+Authorization: Bearer {{luciaToken}}
+
+### ---------------- PAGO Y TICKET ----------------
+
+### Tomás intenta pagar la reserva de Lucía -> 403
+POST {{base}}/bookings/{{bookingId}}/pay
+Authorization: Bearer {{tomasToken}}
+
+### Lucía paga (simulado) -> 200 { booking COMPLETED, ticket con codigoQR }
+# @name pay
+POST {{base}}/bookings/{{bookingId}}/pay
+Authorization: Bearer {{luciaToken}}
+
+###
+@ticketId = {{pay.response.body.ticket.id}}
+@codigoQR = {{pay.response.body.ticket.codigoQR}}
+
+### Pagar otra vez -> 409
+POST {{base}}/bookings/{{bookingId}}/pay
+Authorization: Bearer {{luciaToken}}
+
+### Mis tickets -> 200
+GET {{base}}/tickets/me
+Authorization: Bearer {{luciaToken}}
+
+### Detalle del ticket (dueño) -> 200
+GET {{base}}/tickets/{{ticketId}}
+Authorization: Bearer {{luciaToken}}
+
+### Ticket ajeno -> 403
+GET {{base}}/tickets/{{ticketId}}
+Authorization: Bearer {{tomasToken}}
+
+### Control de acceso: el organizer escanea el QR -> 200 estado USADO
+POST {{base}}/tickets/validate
+Authorization: Bearer {{organizerToken}}
+Content-Type: {{json}}
+
+{ "codigoQR": "{{codigoQR}}" }
+
+### Escanear el mismo QR otra vez -> 409
+POST {{base}}/tickets/validate
+Authorization: Bearer {{organizerToken}}
+Content-Type: {{json}}
+
+{ "codigoQR": "{{codigoQR}}" }
+
+### ---------------- USUARIOS ----------------
+
+### Mi perfil -> 200
+GET {{base}}/users/me
+Authorization: Bearer {{luciaToken}}
+
+### Listar usuarios (admin) -> 200
+GET {{base}}/users
+Authorization: Bearer {{adminToken}}
+
+### Listar usuarios como user -> 403
+GET {{base}}/users
+Authorization: Bearer {{luciaToken}}
+
+### ---------------- ERRORES ----------------
+
+### Ruta inexistente -> 404
+GET {{base}}/no-existe
+
+### Token inválido -> 401
+GET {{base}}/bookings/me
+Authorization: Bearer token.invalido.123
