@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/*
+ * Tokens de diseño. Con Tailwind v4 se definen en @theme y quedan disponibles como clases:
+ * --color-accent -> bg-accent, text-accent, border-accent...
+ * --font-display -> font-display
+ */
+@theme {
+  --color-paper: #faf7f2; /* fondo general, papel cálido */
+  --color-card: #ffffff;
+  --color-ink: #17141f; /* texto principal */
+  --color-muted: #6c6676; /* texto secundario */
+  --color-line: #e8e2d8; /* bordes */
+  --color-accent: #ff5a36; /* coral: botones y acentos */
+  --color-accent-strong: #d93f1d;
+  --color-accent-soft: #ffe7df;
+  --color-ok: #17845a;
+  --color-ok-soft: #dcf3e8;
+  --color-warn: #b86e00;
+  --color-warn-soft: #fff1d6;
+  --color-danger: #c42b2b;
+  --color-danger-soft: #fde4e4;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-bricolage), var(--font-geist-sans), ui-sans-serif, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* Borde "troquelado" de entrada: dos medias lunas y una línea punteada. */
+.ticket-cut {
+  position: relative;
+  border-top: 2px dashed var(--color-line);
+}
+.ticket-cut::before,
+.ticket-cut::after {
+  content: "";
+  position: absolute;
+  top: -13px;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background: var(--color-paper);
+}
+.ticket-cut::before {
+  left: -13px;
+}
+.ticket-cut::after {
+  right: -13px;
+}
+
+/* Leaflet: que el mapa no tape la barra de navegación fija. */
+.leaflet-container {
+  z-index: 0;
+  font-family: inherit;
+}
