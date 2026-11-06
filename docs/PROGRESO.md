@@ -6,7 +6,9 @@ _Última actualización: 5 de noviembre de 2026_
 
 El **backend ya funciona de punta a punta**: se pueden registrar usuarios, crear eventos, reservar entradas (bloqueando el stock 5 minutos), pagar (simulado) y recibir un ticket con código QR, que además se puede validar en la puerta del evento. Quedó probado con 34 verificaciones automáticas, incluyendo compras simultáneas.
 
-Lo que falta es ampliar el backend (tareas abajo) y construir el frontend en React.
+El **frontend en Next.js también está listo** (ver [`frontend/README.md`](../frontend/README.md)): cartelera con filtros, detalle con mapa, checkout con cuenta regresiva, *Mis tickets* con QR y panel para organizadores y administradores (crear eventos, validar QR con la cámara y gestionar roles).
+
+Lo que falta es ampliar el backend (tareas abajo), sumar tests y desplegar.
 
 ## Qué hay hecho
 
