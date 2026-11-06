@@ -2,7 +2,7 @@
 
 Plataforma full stack para **publicar eventos, reservar entradas y validarlas con código QR en la puerta**. Las reservas bloquean el stock durante 5 minutos y el sistema garantiza que nunca se vendan más entradas de las disponibles, incluso con compras simultáneas.
 
-Proyecto final grupal del bootcamp de desarrollo web full stack.
+Proyecto final grupal desarrollado para **Devlights** (Bootcamp 5.0).
 
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
